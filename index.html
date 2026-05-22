@@ -114,15 +114,16 @@
             text-align: center;
             font-weight: bold;
             color: #2b6cb0;
+            font-size: 1rem;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>송아지 Bicarbonate Deficit 계산기</h2>
+    <h2>송아지 8.4% 비본 투여량 계산기</h2>
     
-    <!-- 1. 연령 그룹 선택 -->
     <div class="form-group">
         <label>연령 그룹 (Age Group)</label>
         <div class="radio-group">
@@ -135,13 +136,11 @@
         </div>
     </div>
 
-    <!-- 2. 체중 입력 -->
     <div class="form-group">
         <label for="weight">송아지 체중 (Calf Weight, kg)</label>
         <input type="number" id="weight" placeholder="예: 40" step="0.1" required>
     </div>
 
-    <!-- 3. 현재 HCO3 입력 -->
     <div class="form-group">
         <label for="hco3">현재 HCO₃⁻ 수치 (mmol/L)</label>
         <input type="number" id="hco3" placeholder="예: 12.5" step="0.1" required>
@@ -149,32 +148,29 @@
 
     <button onclick="calculateBicarbonate()">투여량 계산하기</button>
 
-    <!-- 4. 결과 출력 박스 -->
     <div class="result-box" id="resultBox">
-        <div class="result-title">📊 추천 중탄산량 계산 결과</div>
+        <div class="result-title">📊 8.4% 주사액 필요 용량 결과</div>
         <div class="result-item">
-            <span>Target pH 7.20 기준 수치:</span>
-            <span class="result-val" id="resLow">0 mmol</span>
+            <span>Target pH 7.20 기준 부피:</span>
+            <span class="result-val" id="resLow">0 mL</span>
         </div>
         <div class="result-item">
-            <span>Target pH 7.36 기준 수치:</span>
-            <span class="result-val" id="resHigh">0 mmol</span>
+            <span>Target pH 7.36 기준 부피:</span>
+            <span class="result-val" id="resHigh">0 mL</span>
         </div>
         
         <div class="range-box" id="rangeSuggestion">
-            추천 투여 범위: 0 ~ 0 mmol
+            💡 임상 추천 투여 범위: 0 ~ 0 mL
         </div>
     </div>
 </div>
 
 <script>
 function calculateBicarbonate() {
-    // 입력값 가져오기
     const ageGroup = document.querySelector('input[name="ageGroup"]:checked').value;
     const weight = parseFloat(document.getElementById('weight').value);
     const hco3 = parseFloat(document.getElementById('hco3').value);
 
-    // 유효성 검사
     if (isNaN(weight) || isNaN(hco3)) {
         alert("체중과 HCO3 수치를 올바르게 입력해 주세요.");
         return;
@@ -182,33 +178,33 @@ function calculateBicarbonate() {
 
     let targetLow_desired, targetHigh_desired, abs;
 
-    // 공식 대입
     if (ageGroup === 'early') {
         targetLow_desired = 19.5;
         targetHigh_desired = 28.1;
         abs = 0.46;
-    } else { // late
+    } else {
         targetLow_desired = 15.4;
         targetHigh_desired = 22.2;
         abs = 0.54;
     }
 
-    // Deficit 계산
     let deficitLow = (targetLow_desired - hco3) * weight * abs;
     let deficitHigh = (targetHigh_desired - hco3) * weight * abs;
 
-    // 음수 값 처리 (현재 수치가 타겟보다 높은 경우 0 처리)
     if (deficitLow < 0) deficitLow = 0;
     if (deficitHigh < 0) deficitHigh = 0;
 
-    // 화면에 반영 (소수점 첫째자리까지 표시)
-    document.getElementById('resLow').innerText = deficitLow.toFixed(1) + " mmol";
-    document.getElementById('resHigh').innerText = deficitHigh.toFixed(1) + " mmol";
-    
-    document.getElementById('rangeSuggestion').innerText = 
-        `💡 임상 추천 투여 범위: ${deficitLow.toFixed(1)} ~ ${deficitHigh.toFixed(1)} mmol`;
+    // 8.4% 주사액은 1 mmol = 1 mL이므로 변환 없이 정수 반올림하여 mL로 표기
+    const mlLow = Math.round(deficitLow);
+    const mlHigh = Math.round(deficitHigh);
 
-    // 결과창 보여주기
+    // 결과 출력 (mL 단위 적용)
+    document.getElementById('resLow').innerText = mlLow + " mL";
+    document.getElementById('resHigh').innerText = mlHigh + " mL";
+    
+    document.getElementById('rangeSuggestion').innerHTML = 
+        `📢 주사기 눈금 기준 <b style="font-size:1.15rem; color:#2b6cb0;">${mlLow}mL ~ ${mlHigh}mL 사이</b>로 투여하십시오.`;
+
     document.getElementById('resultBox').style.display = 'block';
 }
 </script>
