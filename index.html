@@ -23,38 +23,35 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: relative;
         }
-        /* 언어 선택 스위치 스타일 */
-/* [수정] 제목과 절대 겹치지 않도록 맨 위에 독립적인 줄로 배치 */
+        /* 드롭다운 언어 선택창 레이아웃 */
         .lang-switch {
             display: flex;
-            justify-content: flex-end; /* 버튼들을 우측으로 정렬 */
-            gap: 6px;
-            margin-bottom: 10px;       /* 제목과의 사이 간격 확보 */
+            justify-content: flex-end;
+            margin-bottom: 12px;
             z-index: 10;
         }
-
-        .lang-btn {
-            background: #edf2f7;
+        .lang-select {
+            padding: 8px 12px;
             border: 1px solid #cbd5e0;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
             font-weight: bold;
+            background-color: #fff;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .lang-btn.active {
-            background: #3182ce;
-            color: white;
+        .lang-select:focus {
+            outline: none;
             border-color: #3182ce;
         }
         h2 {
             text-align: center;
             color: #2c3e50;
             margin-top: 5px;
-            padding-top: 0;      /* 기존에 넣었던 큰 패딩 제거 */
+            padding-top: 0;
             margin-bottom: 25px;
-            font-size: 1.35rem;  /* 좁은 화면을 위해 글자 크기 미세 조정 */
-            line-height: 1.4;    /* 줄바꿈 시 글자끼리 겹치지 않도록 줄간격 확보 */
+            font-size: 1.35rem;
+            line-height: 1.4;
         }
         .form-group {
             margin-bottom: 20px;
@@ -65,22 +62,22 @@
             margin-bottom: 8px;
             color: #4a5568;
         }
+        /* 라디오 버튼 세로 배열 구조 개선 (터치 오작동 방지) */
         .radio-group {
             display: flex;
-            flex-direction: column; /* 가로 배열에서 세로 배열로 변경 */
+            flex-direction: column;
             gap: 10px;
             background: #edf2f7;
             padding: 12px;
             border-radius: 8px;
         }
-        /* [수정] 터치하기 편하도록 줄바꿈 방지 및 줄높이 확보 */
         .radio-label {
             display: flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
             font-weight: normal;
-            white-space: nowrap; /* 글자가 중간에 끊겨서 줄바꿈되는 것 방지 */
+            white-space: nowrap;
             padding: 2px 0;
         }
         input[type="number"] {
@@ -154,15 +151,23 @@
 <body>
 
 <div class="container">
-    <!-- 최상단 언어 선택 -->
+    <!-- 1. 드롭다운 방식 언어 선택창 -->
     <div class="lang-switch">
-        <button class="lang-btn active" id="btnKo" onclick="setLanguage('ko')">한글</button>
-        <button class="lang-btn" id="btnEn" onclick="setLanguage('en')">EN</button>
+        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文 (简体)</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+        </select>
     </div>
 
     <h2 id="txtTitle">송아지 중탄산량(Bicarbonate) 투여량 계산기</h2>
     
-    <!-- 1. 연령 그룹 -->
+    <!-- 2. 연령 그룹 -->
     <div class="form-group">
         <label id="lblAge">연령 그룹 (Age Group)</label>
         <div class="radio-group">
@@ -175,22 +180,22 @@
         </div>
     </div>
 
-    <!-- 2. 체중 -->
+    <!-- 3. 체중 -->
     <div class="form-group">
         <label for="weight" id="lblWeight">송아지 체중 (Calf Weight, kg)</label>
         <input type="number" id="weight" placeholder="예: 40" step="0.1" required>
     </div>
 
-    <!-- 3. 현재 HCO3 -->
+    <!-- 4. 현재 HCO3 -->
     <div class="form-group">
         <label for="hco3" id="lblHco3">현재 HCO₃⁻ 수치 (mmol/L)</label>
         <input type="number" id="hco3" placeholder="예: 12.5" step="0.1" required>
     </div>
 
-    <!-- 4. 주사약 농도 선택 (추가된 기능) -->
+    <!-- 5. 주사약 농도 -->
     <div class="form-group">
         <label id="lblConc">주사약 농도 (Concentration)</label>
-        <div class="radio-group" style="background: #e6fffa; flex-direction: column;">
+        <div class="radio-group" style="background: #e6fffa;">
             <label class="radio-label" style="font-weight: bold;">
                 <input type="radio" name="concGroup" value="8.4" checked onchange="if(calculated) updateVolumeOutput()"> 8.4% (1 mmol = 1 mL)
             </label>
@@ -206,7 +211,6 @@
     <div class="result-box" id="resultBox">
         <div class="result-title" id="txtResultTitle">📊 추천 중탄산량 계산 결과</div>
         
-        <!-- mmol 결과 우선 배치 -->
         <div class="result-item">
             <span id="txtTargetLowMmol">Target pH 7.20 기준 수치:</span>
             <span class="result-val" id="resLowMmol">0 mmol</span>
@@ -216,7 +220,6 @@
             <span class="result-val" id="resHighMmol">0 mmol</span>
         </div>
 
-        <!-- mL 결과 배치 -->
         <div class="result-item" style="border-top: 1px dashed #cbd5e0; padding-top: 12px;">
             <span id="txtTargetLowMl">Target pH 7.20 필요 부피:</span>
             <span class="result-val" id="resLowMl" style="color:#2c7a7b;">0 mL</span>
@@ -226,9 +229,7 @@
             <span class="result-val" id="resHighMl" style="color:#2c7a7b;">0 mL</span>
         </div>
         
-        <div class="range-box" id="rangeSuggestion">
-            추천 가이드라인이 여기에 표시됩니다.
-        </div>
+        <div class="range-box" id="rangeSuggestion"></div>
     </div>
 </div>
 
@@ -238,50 +239,94 @@ let calculated = false;
 let globalDeficitLow = 0;
 let globalDeficitHigh = 0;
 
-// 다국어 텍스트 사전
+// 🌐 8개국 다국어 번역 사전 데이터
 const i18n = {
     ko: {
-        title: "송아지 중탄산량(Bicarbonate) 투여량 계산기",
-        age: "연령 그룹 (Age Group)",
-        early: "Early (1 - 10일령)",
-        late: "Late (11 - 20일령)",
-        weight: "송아지 체중 (Calf Weight, kg)",
-        hco3: "현재 HCO₃⁻ 수치 (mmol/L)",
-        conc: "주사약 농도 (Concentration)",
-        calcBtn: "투여량 계산하기",
-        resTitle: "📊 추천 중탄산량 계산 결과",
-        tLowMmol: "Target pH 7.20 기준 수치:",
-        tHighMmol: "Target pH 7.36 기준 수치:",
-        tLowMl: "Target pH 7.20 필요 부피:",
-        tHighMl: "Target pH 7.36 필요 부피:",
-        alert: "체중과 HCO3 수치를 올바르게 입력해 주세요.",
-        guide: (low, high, conc) => `📢 주사기 눈금 기준 [${conc}% 주사액] <b style="font-size:1.15rem; color:#2b6cb0;">${low}mL ~ ${high}mL 사이</b>로 투여하십시오.`
+        title: "송아지 중탄산량 투여량 계산기",
+        age: "연령 그룹", weight: "송아지 체중 (kg)", hco3: "현재 HCO₃⁻ 수치 (mmol/L)", conc: "주사약 농도",
+        early: "Early (1 - 10일령)", late: "Late (11 - 20일령)", calcBtn: "투여량 계산하기", resTitle: "📊 추천 중탄산량 계산 결과",
+        tLowMmol: "Target pH 7.20 기준 수치:", tHighMmol: "Target pH 7.36 기준 수치:",
+        tLowMl: "Target pH 7.20 필요 부피:", tHighMl: "Target pH 7.36 필요 부피:", alert: "체중과 HCO3 수치를 올바르게 입력해 주세요.",
+        guide: (low, high, conc) => `📢 주사기 눈금 기준 [${conc}% 주사액] <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL ~ ${high}mL 사이</b>로 투여하십시오.`
     },
     en: {
         title: "Calf Bicarbonate Deficit Calculator",
-        age: "Age Group",
-        early: "Early (1 - 10 Days old)",
-        late: "Late (11 - 20 Days old)",
-        weight: "Calf Weight (kg)",
-        hco3: "Current cHCO₃⁻ (mmol/L)",
-        conc: "Bicarbonate Concentration",
-        calcBtn: "Calculate Deficit",
-        resTitle: "📊 Recommended Bicarbonate Dosage",
-        tLowMmol: "Target pH 7.20 Deficit:",
-        tHighMmol: "Target pH 7.36 Deficit:",
-        tLowMl: "Target pH 7.20 Required Volume:",
-        tHighMl: "Target pH 7.36 Required Volume:",
-        alert: "Please enter valid Weight and HCO3 values.",
-        guide: (low, high, conc) => `📢 Infuse between <b style="font-size:1.15rem; color:#2b6cb0;">${low}mL and ${high}mL</b> of [${conc}% solution] based on syringe scale.`
+        age: "Age Group", weight: "Calf Weight (kg)", hco3: "Current cHCO₃⁻ (mmol/L)", conc: "Bicarbonate Concentration",
+        early: "Early (1 - 10 Days old)", late: "Late (11 - 20 Days old)", calcBtn: "Calculate Deficit", resTitle: "📊 Recommended Dosage Result",
+        tLowMmol: "Target pH 7.20 Deficit:", tHighMmol: "Target pH 7.36 Deficit:",
+        tLowMl: "Target pH 7.20 Required Volume:", tHighMl: "Target pH 7.36 Required Volume:", alert: "Please enter valid Weight and HCO3 values.",
+        guide: (low, high, conc) => `📢 Infuse between <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL and ${high}mL</b> of [${conc}% solution] based on syringe scale.`
+    },
+    es: {
+        title: "Calculadora de Déficit de Bicarbonato en Terneros",
+        age: "Grupo de Edad", weight: "Peso del Ternero (kg)", hco3: "cHCO₃⁻ Actual (mmol/L)", conc: "Concentración de Bicarbonato",
+        early: "Temprano (1 - 10 Días)", late: "Tardío (11 - 20 Días)", calcBtn: "Calcular Dosis", resTitle: "📊 Dosis de Bicarbonato Recomendada",
+        tLowMmol: "Déficit para Target pH 7.20:", tHighMmol: "Déficit para Target pH 7.36:",
+        tLowMl: "Volumen para Target pH 7.20:", tHighMl: "Volumen para Target pH 7.36:", alert: "Por favor, ingrese valores válidos de peso y HCO3.",
+        guide: (low, high, conc) => `📢 Infundir entre <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL y ${high}mL</b> de [solución al ${conc}%] según la escala de la jeringa.`
+    },
+    pt: {
+        title: "Calculadora de Déficit de Bicarbonato para Bezerros",
+        age: "Faixa Etária", weight: "Peso do Bezerro (kg)", hco3: "cHCO₃⁻ Atual (mmol/L)", conc: "Concentração de Bicarbonato",
+        early: "Precoce (1 - 10 Dias)", late: "Tardio (11 - 20 Dias)", calcBtn: "Calcular Dosagem", resTitle: "📊 Dosagem de Bicarbonato Recomendada",
+        tLowMmol: "Déficit para Target pH 7.20:", tHighMmol: "Déficit para Target pH 7.36:",
+        tLowMl: "Volume para Target pH 7.20:", tHighMl: "Volume para Target pH 7.36:", alert: "Por favor, insira valores válidos de peso e HCO3.",
+        guide: (low, high, conc) => `📢 Infundir entre <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL e ${high}mL</b> de [solução a ${conc}%] com base na escala da seringa.`
+    },
+    ja: {
+        title: "子牛の炭酸水素ナトリウム投与量計算機",
+        age: "日齢グループ", weight: "子牛の体重 (kg)", hco3: "現在の HCO₃⁻ 濃度 (mmol/L)", conc: "注射液の濃度",
+        early: "Early (生後 1 - 10日)", late: "Late (生後 11 - 20日)", calcBtn: "投与量を計算する", resTitle: "📊 推奨重炭酸量計算結果",
+        tLowMmol: "Target pH 7.20 基準値:", tHighMmol: "Target pH 7.36 基準値:",
+        tLowMl: "Target pH 7.20 必要容量:", tHighMl: "Target pH 7.36 必要容量:", alert: "体重とHCO3の値を正しく入力してください。",
+        guide: (low, high, conc) => `📢 注射器の目盛りに合わせて、[${conc}% 注射液] を <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL から ${high}mL の間</b>で投与してください。`
+    },
+    zh: {
+        title: "牛犊碳酸氢钠静脉输液量计算器",
+        age: "年龄组", weight: "牛犊体重 (kg)", hco3: "当前 HCO₃⁻ 浓度 (mmol/L)", conc: "注射液浓度",
+        early: "早期 (1 - 10日龄)", late: "晚期 (11 - 20日龄)", calcBtn: "计算输液量", resTitle: "📊 推荐碳酸氢钠补充量",
+        tLowMmol: "Target pH 7.20 缺损量:", tHighMmol: "Target pH 7.36 缺损量:",
+        tLowMl: "Target pH 7.20 所需体积:", tHighMl: "Target pH 7.36 所需体积:", alert: "请输入正确的体重和 HCO3 数值。",
+        guide: (low, high, conc) => `📢 请根据注射器刻度，注射 <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL 至 ${high}mL 之间</b>的 [${conc}% 注射液]。`
+    },
+    de: {
+        title: "Kälber-Bicarbonat-Defizit-Rechner",
+        age: "Altersgruppe", weight: "Kälbergewicht (kg)", hco3: "Aktuelles cHCO₃⁻ (mmol/L)", conc: "Bicarbonat-Konzentration",
+        early: "Früh (1 - 10 Tage alt)", late: "Spät (11 - 20 Tage alt)", calcBtn: "Defizit Berechnen", resTitle: "📊 Empfohlene Bicarbonat-Dosierung",
+        tLowMmol: "Defizit für Target pH 7.20:", tHighMmol: "Defizit für Target pH 7.36:",
+        tLowMl: "Volumen für Target pH 7.20:", tHighMl: "Volumen für Target pH 7.36:", alert: "Bitte geben Sie gültige Werte für Gewicht und HCO3 ein.",
+        guide: (low, high, conc) => `📢 Infundieren Sie zwischen <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL und ${high}mL</b> der [${conc}%igen Lösung] gemäß der Spritzenskala.`
+    },
+    fr: {
+        title: "Calculateur de Déficit en Bicarbonate pour Veaux",
+        age: "Groupe d'âge", weight: "Poids du Veau (kg)", hco3: "cHCO₃⁻ Actuel (mmol/L)", conc: "Concentration en Bicarbonate",
+        early: "Précoce (1 - 10 Jours)", late: "Tardif (11 - 20 Jours)", calcBtn: "Calculer le Déficit", resTitle: "📊 Dosage de Bicarbonate Recommandé",
+        tLowMmol: "Déficit pour Target pH 7.20:", tHighMmol: "Déficit pour Target pH 7.36:",
+        tLowMl: "Volume pour Target pH 7.20:", tHighMl: "Volume pour Target pH 7.36:", alert: "Veuillez entrer des valeurs valides de poids et de HCO3.",
+        guide: (low, high, conc) => `📢 Perfuser entre <b style="font-size:1.1rem; color:#2b6cb0;">${low}mL et ${high}mL</b> de [solution à ${conc}%] selon l'échelle de la seringue.`
     }
 };
 
-function setLanguage(lang) {
-    currentLang = lang;
-    document.getElementById('btnKo').classList.toggle('active', lang === 'ko');
-    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+// 💾 페이지 첫 방문 또는 새로고침 시 스마트폰에 저장된 기존 언어 기록 호출
+window.onload = function() {
+    const savedLang = localStorage.getItem('userLanguage');
+    if (savedLang && i18n[savedLang]) {
+        currentLang = savedLang;
+        document.getElementById('langSelect').value = savedLang;
+    } else {
+        currentLang = 'ko'; // 저장 데이터가 없다면 기본값은 한국어
+    }
+    applyLanguage(currentLang);
+};
 
-    // 텍스트 매핑 변환
+function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('userLanguage', lang); // 💾 사용자가 고른 언어를 스마트폰 내장 스토리지에 평생 기억
+    applyLanguage(lang);
+}
+
+// 화면 텍스트 실시간 치환 함수
+function applyLanguage(lang) {
     document.getElementById('txtTitle').innerText = i18n[lang].title;
     document.getElementById('lblAge').innerText = i18n[lang].age;
     document.getElementById('txtEarly').innerText = i18n[lang].early;
@@ -293,59 +338,73 @@ function setLanguage(lang) {
     document.getElementById('txtResultTitle').innerText = i18n[lang].resTitle;
     document.getElementById('txtTargetLowMmol').innerText = i18n[lang].tLowMmol;
     document.getElementById('txtTargetHighMmol').innerText = i18n[lang].tHighMmol;
+    document.getElementById('txtTargetLowMl').innerText = i18n[lang].tLowMl;
+    document.getElementById('txtTargetHighMl').innerText = i18n[lang].tHighMl;
 
-document.getElementById('txtTargetLowMl').innerText = i18n[lang].tLowMl;
-document.getElementById('txtTargetHighMl').innerText = i18n[lang].tHighMl;
-if (calculated) {
-updateVolumeOutput();
+    if (calculated) {
+        updateVolumeOutput();
+    }
 }
-}
+
+// 🧮 버튼 클릭 시 중탄산 부족량(mmol) 기본 연산 함수
 function calculateBicarbonate() {
-const ageGroup = document.querySelector('input[name="ageGroup"]:checked').value;
-const weight = parseFloat(document.getElementById('weight').value);
-const hco3 = parseFloat(document.getElementById('hco3').value);
-if (isNaN(weight) || isNaN(hco3)) {
-alert(i18n[currentLang].alert);
-return;
+    const ageGroup = document.querySelector('input[name="ageGroup"]:checked').value;
+    const weight = parseFloat(document.getElementById('weight').value);
+    const hco3 = parseFloat(document.getElementById('hco3').value);
+
+    if (isNaN(weight) || isNaN(hco3)) {
+        alert(i18n[currentLang].alert);
+        return;
+    }
+
+    let targetLow_desired, targetHigh_desired, abs;
+
+    if (ageGroup === 'early') {
+        targetLow_desired = 19.5;
+        targetHigh_desired = 28.1;
+        abs = 0.46;
+    } else {
+        targetLow_desired = 15.4;
+        targetHigh_desired = 22.2;
+        abs = 0.54;
+    }
+
+    globalDeficitLow = (targetLow_desired - hco3) * weight * abs;
+    globalDeficitHigh = (targetHigh_desired - hco3) * weight * abs;
+
+    if (globalDeficitLow < 0) globalDeficitLow = 0;
+    if (globalDeficitHigh < 0) globalDeficitHigh = 0;
+
+    calculated = true;
+    updateVolumeOutput();
+    document.getElementById('resultBox').style.display = 'block';
 }
-let targetLow_desired, targetHigh_desired, abs;
-if (ageGroup === 'early') {
-targetLow_desired = 19.5;
-targetHigh_desired = 28.1;
-abs = 0.46;
-} else {
-targetLow_desired = 15.4;
-targetHigh_desired = 22.2;
-abs = 0.54;
-}
-globalDeficitLow = (targetLow_desired - hco3) * weight * abs;
-globalDeficitHigh = (targetHigh_desired - hco3) * weight * abs;
-if (globalDeficitLow < 0) globalDeficitLow = 0;
-if (globalDeficitHigh < 0) globalDeficitHigh = 0;
-calculated = true;
-updateVolumeOutput();
-document.getElementById('resultBox').style.display = 'block';
-}
+
+// 🧪 농도 선택 라디오 버튼에 따른 투여 부피(mL) 동적 환산 및 최종 출력 함수
 function updateVolumeOutput() {
-const conc = document.querySelector('input[name="concGroup"]:checked').value;
-// mmol 출력 (소수점 첫째자리까지 표시하여 학술적 정밀성 유지)
-document.getElementById('resLowMmol').innerText = globalDeficitLow.toFixed(1) + " mmol";
-document.getElementById('resHighMmol').innerText = globalDeficitHigh.toFixed(1) + " mmol";
-// mL 계산 (8.4%는 1:1, 4.2%는 1mmol = 2mL이므로 mmol * 2)
-let mlLow = 0;
-let mlHigh = 0;
-if (conc === '8.4') {
-mlLow = Math.round(globalDeficitLow);
-mlHigh = Math.round(globalDeficitHigh);
-} else { // 4.2%
-mlLow = Math.round(globalDeficitLow * 2);
-mlHigh = Math.round(globalDeficitHigh * 2);
-}
-// 부피 출력 및 가이드라인 동적 번역 생성
-document.getElementById('resLowMl').innerText = mlLow + " mL";
-document.getElementById('resHighMl').innerText = mlHigh + " mL";
-document.getElementById('rangeSuggestion').innerHTML = i18n[currentLang].guide(mlLow, mlHigh, conc);
-}
+    const conc = document.querySelector('input[name="concGroup"]:checked').value;
+    
+    document.getElementById('resLowMmol').innerText = globalDeficitLow.toFixed(1) + " mmol";
+    document.getElementById('resHighMmol').innerText = globalDeficitHigh.toFixed(1) + " mmol";
 
+    let mlLow = 0;
+    let mlHigh = 0;
 
+    if (conc === '8.4') {
+        mlLow = Math.round(globalDeficitLow);
+        mlHigh = Math.round(globalDeficitHigh);
+    } else { // 4.2% 제품은 mmol 값에 2배를 적용
+        mlLow = Math.round(globalDeficitLow * 2);
+        mlHigh = Math.round(globalDeficitHigh * 2);
+    }
+
+    document.getElementById('resLowMl').innerText = mlLow + " mL";
+    document.getElementById('resHighMl').innerText = mlHigh + " mL";
+    
+    document.getElementById('rangeSuggestion').innerHTML = i18n[currentLang].guide(mlLow, mlHigh, conc);
+}
 </script>
+</body>
+</html>
+
+    
